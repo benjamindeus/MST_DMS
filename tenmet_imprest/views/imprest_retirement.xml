@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+<!--        Imprest Retirement Form View-->
+        <record model="ir.ui.view" id="imprest_retirement_form">
+            <field name="name">imprest_retirement_form</field>
+            <field name="model">imprest.retirement</field>
+            <field name="arch" type="xml">
+                <form string="Imprest Retirement">
+
+
+                    <header>
+
+                        <button name="action_draft" type="object"
+                                string="Reset to Draft"
+                                states="rejected"/>
+
+                        <button name="action_submitted" type="object"
+                                string="Submit"
+                                class="oe_highlight"
+                                states="draft"/>
+
+                        <button name="action_authorized" type="object"
+                                string="Authorize"
+                                class="oe_highlight"
+                                groups="tenmet_imprest.group_imprest_approver"
+                                states="submitted"/>
+
+                        <button name="action_certified" type="object"
+                                string="Certify"
+                                class="oe_highlight"
+                                groups="tenmet_imprest.group_imprest_approver"
+                                states="authorized"/>
+
+                        <button name="action_approved" type="object"
+                                string="Approve"
+                                class="oe_highlight"
+                                groups="tenmet_imprest.group_imprest_approver"
+                                states="certified"/>
+
+<!--                        <button name="action_rejected" type="object"-->
+<!--                                string="Reject"-->
+<!--                                states="submitted,authorized,certified"/>-->
+
+                        <button name="action_reject1" type="object"
+                                string="Reject"
+                                groups="tenmet_imprest.group_imprest_approver"
+                                states="submitted"/>
+                        <button name="action_reject2" type="object"
+                                string="Reject"
+                                groups="tenmet_imprest.group_imprest_approver"
+                                states="authorized"/>
+                        <button name="action_reject3" type="object"
+                                string="Reject"
+                                groups="tenmet_imprest.group_imprest_approver"
+                                states="certified"/>
+
+                         <field name="state" widget="statusbar" options="{'fold_field': 'fold'"/>
+
+                    </header>
+
+                    <sheet>
+                        
+                        <div class="oe_button_box" name="button_box">
+
+                        </div>
+
+                        <div class="oe_title">
+                                <label for="name" string="Imprest Retirement"/>
+                                <h1>
+                                    <field name="name" readonly="1"/>
+                                </h1>
+                            </div>
+
+                        <group>
+                            <group>
+                                <field name="imprest_ref" readonly="1"/>
+                                <field name="retirement_applicant_id" readonly="1"/>
+                                <field name="date" attrs="{'readonly':[('state','not in','draft')]}"/>
+                                <field name="retirement_activity" readonly="1"/>
+                                <field name="retirement_project" readonly="1"/>
+                                <field name="retirement_purpose" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="amount_advanced" readonly="1"/>
+                                <field name="total_amount_spent" attrs="{'readonly':[('state','not in','draft')]}"/>
+                                <field name="retirement_balance"/>
+                                <field name="comment" attrs="{'readonly':[('state','not in','draft')]}"/>
+                            </group>
+                        </group>
+
+                        <notebook>
+                            <page string="Retirement Details">
+                                <field name="imprest_retirement_line_ids">
+                                    <tree string="Retirement Details" editable="bottom">
+                                        <field name="state" invisible="1"/>
+                                        <field name="name" readonly="1"/>
+                                        <field name="obligated_budget" readonly="1" sum="Total"/>
+                                        <field name="date" attrs="{'readonly':[('state','not in',['draft'])]}"/>
+                                        <field name="payee_name" attrs="{'readonly':[('state','not in',['draft'])]}"/>
+                                        <field name="amount_spent" sum="Total" attrs="{'readonly':[('state','not in',['draft'])]}"/>
+                                        <field name="balance" sum="Total"/>  <!--Make this read-only on form view-->
+                                        <field name="doc_ref_number" attrs="{'readonly':[('state','not in',['draft'])]}"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Approvals">
+                                <group>
+                                    <group>
+                                        <field name="current_user" invisible="1"/>
+                                        <field name="created_by_id" invisible="1"/>
+                                        <field name="authorizer_id" attrs="{'readonly':[('state','not in','draft')]}"/>
+                                        <field name="certifier_id" attrs="{'readonly':[('state','not in','draft')]}"/>
+                                        <field name="approver_id" attrs="{'readonly':[('state','not in','draft')]}"/>
+                                    </group>
+                                    <group>
+                                        <field name="is_authorizer" invisible="1"/>
+                                        <field name="is_certifier" invisible="1"/>
+                                        <field name="is_approver" invisible="1"/>
+                                    </group>
+                                </group>
+                            </page>
+                        </notebook>
+
+                    </sheet>
+
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+
+
+                </form>
+            </field>
+        </record>
+
+<!--        Imprest Retirement Tree View-->
+         <record model="ir.ui.view" id="imprest_retirement_tree_view">
+            <field name="name">imprest_retirement_tree_view</field>
+            <field name="model">imprest.retirement</field>
+            <field name="arch" type="xml">
+                <tree string="Imprest Retirement">
+                    <field name="name"/>
+                    <field name="retirement_applicant_id"/>
+                    <field name="date"/>
+                    <field name="amount_advanced" string="Amount Requested"/>
+                    <field name="total_amount_spent"/>
+                    <field name="retirement_balance"/>
+                     <!-- <field name="it4business_dms_file_id"/> -->
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="imprest_retirement_search">
+            <field name="name">imprest_retirement_search</field>
+            <field name="model">imprest.retirement</field>
+            <field name="arch" type="xml">
+                <search string="Search">
+                    <field name="retirement_applicant_id"/>
+                    <field name="retirement_purpose"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Applicant" name="payee" domain="" context="{'group_by':'retirement_applicant_id'}"/>
+                        <filter string="Date" name="date" domain="" context="{'group_by':'date'}"/>
+                     <!--    <filter string="Activity" name="activity" domain="" context="{'group_by':'retirement_activity'}"/>
+                        <filter string="Project" name="project" domain="" context="{'group_by':'retirement_project'}"/> -->
+                        <filter string="State" name="state" domain="" context="{'group_by':'state'}"/>
+                    </group>
+
+                </search>
+            </field>
+        </record>
+
+<!--        New retirements menu action-->
+        <act_window id="retirement_new_action"
+                    name="Retirements"
+                    res_model="imprest.retirement"
+                    view_mode="tree,form"/>
+
+<!-- domain="[('created_by_id.user_id', '=', uid)]" -->
+                    
+
+<!--        Retirement awaiting approval menu action-->
+<!--        <act_window id="retirement_menu_awaiting_approval_action"-->
+<!--                    name="Imprest - Awaiting Approval"-->
+<!--                    res_model="imprest.retirement"-->
+<!--                    view_mode="tree,form"-->
+<!--                    domain="[('state', 'in', ('submitted','authorized','certified'))]"/>-->
+
+        <record id="menu_retirement_for_authorizing_action" model="ir.actions.act_window">
+            <field name="name">For Authorizing</field>
+            <field name="res_model">imprest.retirement</field>
+            <field name="domain">[('state', '=', 'submitted')]</field>
+            <field name="context">{}</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record id="menu_retirement_for_certifying_action" model="ir.actions.act_window">
+            <field name="name">For Certifying</field>
+            <field name="res_model">imprest.retirement</field>
+            <field name="domain">[('state', '=', 'authorized')]</field>
+            <field name="context">{}</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record id="menu_retirement_for_approving_action" model="ir.actions.act_window">
+            <field name="name">For Approving</field>
+            <field name="res_model">imprest.retirement</field>
+            <field name="domain">[('state', '=', 'certified')]</field>
+            <field name="context">{}</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+<!--        Approved Retirements Menu action-->
+        <act_window id="retirement_menu_approved_action"
+                    name="Imprest - Approved"
+                    res_model="imprest.retirement"
+                    view_mode="tree,form"
+                    domain="[('state', '=','approved' )]"/>
+
+<!--        Imprest Retirement Parent Menu-->
+        <menuitem name="Imprest Retirement"
+                  id="retirement_parent_menu"
+                  parent="menu_imprest_root"
+                  sequence="2"/>
+
+<!--        New Imprest Retirements-->
+        <menuitem name="Retirements"
+                  id="retirement_new"
+                  parent="retirement_parent_menu"
+                  action="retirement_new_action"
+                  sequence="1"/>
+
+        <menuitem id="retirement_menu_awaiting_approval"
+                  name="Awaiting Approval"
+                  sequence="2"
+                  groups="group_imprest_approver"
+                  parent="retirement_parent_menu"/>
+
+        <menuitem id="menu_retirement_for_authorizing"
+                  name="For Authorizing"
+                  sequence="1"
+                  parent="retirement_menu_awaiting_approval"
+                  action="menu_retirement_for_authorizing_action"/>
+
+        <menuitem id="menu_retirement_for_certifying"
+                  name="For Certifying"
+                  sequence="2"
+                  parent="retirement_menu_awaiting_approval"
+                  action="menu_retirement_for_certifying_action"/>
+
+        <menuitem id="menu_retirement_for_approving"
+                  name="For Approving"
+                  sequence="3"
+                  parent="retirement_menu_awaiting_approval"
+                  action="menu_retirement_for_approving_action"/>
+
+        <menuitem id="retirement_menu_approved"
+                  name="Approved"
+                  sequence="3"
+                  action="retirement_menu_approved_action"
+                  groups="group_imprest_accountant"
+                  parent="retirement_parent_menu"/>
+
+    </data>
+</odoo>

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="0">
+
+<!--        Category Imprest Application Category Under Access Rights -->
+        <record model="ir.module.category" id="module_imprest_management">
+            <field name="name">TENMET Imprest</field>
+            <field name="description">TENMET Imprest Application</field>
+            <field name="sequence">6</field>
+        </record>
+
+<!--        Group Approver-->
+        <record model="res.groups" id="group_imprest_approver">
+            <field name="name">Approver</field>
+            <field name="category_id" ref="module_imprest_management"/>
+        </record>
+
+<!--        Group Accountant-->
+        <record model="res.groups" id="group_imprest_accountant">
+            <field name="name">Accountant</field>
+            <field name="category_id" ref="module_imprest_management"/>
+        </record>
+
+<!--        Group Administrator-->
+        <record model="res.groups" id="group_imprest_administrator">
+            <field name="name">Administrator</field>
+            <field name="category_id" ref="module_imprest_management"/>
+            <field name="implied_ids" eval="[(4, ref('tenmet_imprest.group_imprest_accountant'))]"/>
+        </record>
+
+        <!--        Group Project Lead-->
+        <record model="res.groups" id="group_imprest_project_lead">
+            <field name="name">Project Lead</field>
+            <field name="category_id" ref="module_imprest_management"/>
+            <field name="implied_ids" eval="[(4, ref('tenmet_imprest.group_imprest_approver'))]"/>
+        </record>
+
+        <!--        Finance Approver-->
+        <record model="res.groups" id="group_imprest_financial_user_approver">
+            <field name="name">Finance User Approver</field>
+            <field name="category_id" ref="module_imprest_management"/>
+            <field name="implied_ids" eval="[(4, ref('tenmet_imprest.group_imprest_approver'))]"/>
+        </record>
+        <record model="res.groups" id="group_imprest_financial_lead_approver">
+            <field name="name">Finance Lead Approver</field>
+            <field name="category_id" ref="module_imprest_management"/>
+            <field name="implied_ids" eval="[(4, ref('tenmet_imprest.group_imprest_approver'))]"/>
+        </record>
+        <record model="res.groups" id="group_imprest_financial_director_approver">
+            <field name="name">Finance Director Approver</field>
+            <field name="category_id" ref="module_imprest_management"/>
+            <field name="implied_ids" eval="[(4, ref('tenmet_imprest.group_imprest_approver'))]"/>
+        </record>
+        <record model="res.groups" id="group_imprest_financial_country_approver">
+            <field name="name">Finance Country Approver</field>
+            <field name="category_id" ref="module_imprest_management"/>
+            <field name="implied_ids" eval="[(4, ref('tenmet_imprest.group_imprest_approver'))]"/>
+        </record>
+
+    </data>
+
+    <data noupdate="0">
+
+<!--        Imprest Applicant Sees Own Records-->
+        <record model="ir.rule" id="imprest_application_own_record">
+            <field name="name">Applicant sees imprest</field>
+            <field name="model_id" ref="model_imprest_application"/>
+            <field name="domain_force">[('create_uid','=',user.id)]</field>
+        </record>
+
+<!--        Retirement Applicant Sees own records-->
+<!--        <record model="ir.rule" id="retirement_applicant_own_record">-->
+<!--            <field name="name">Retirement Applicant sees own records</field>-->
+<!--            <field name="model_id" ref="model_imprest_retirement"/>-->
+<!--            <field name="domain_force">[('create_uid','=',user.id)]</field>-->
+<!--        </record>-->
+
+<!--        Authorizer sees submitted imprest for his authorization-->
+        <record model="ir.rule" id="authorizer_sees_imprest_for_approval">
+            <field name="name">Authorizer sees submitted imprest requiring his authorization</field>
+            <field name="model_id" ref="model_imprest_application"/>
+            <field name="groups" eval="[(4, ref('group_imprest_approver'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
+<!--        Authorizer sees submitted retirements for his authorization-->
+<!--        <record model="ir.rule" id="authorizer_sees_retirement_for_approval">-->
+<!--            <field name="name">Authorizer sees submitted retirement requiring his authorization</field>-->
+<!--            <field name="model_id" ref="model_imprest_retirement"/>-->
+<!--            <field name="groups" eval="[(4, ref('tenmet_imprest.group_imprest_approver'))]"/>-->
+<!--            <field name="domain_force">[(1, '=', 1), ('state', 'in', ('submitted','authorized')), ('authorizer_id','=', user.id)]</field>-->
+<!--        </record>-->
+
+    </data>
+
+</odoo>
